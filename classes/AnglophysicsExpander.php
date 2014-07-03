@@ -21,6 +21,7 @@ class AnglophysicsExpander{
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words);
 		$words = AnglophysicsExpander_WordEliminator::eliminate_non_words($words);
 		$words = AnglophysicsExpander_CombinationFinder::eliminate_uncombinable_words(array_merge($this->words, $words));
+		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words);
 		$this->words_by_phase[] = $words;
 		$this->words = array_merge($this->words, $words);
 	}
