@@ -9,5 +9,6 @@ else{
 }
 
 $exp = new AnglophysicsExpander($base_words);
-$exp->expand();
+$echo = new ConsoleEcho($exp);
+$exp->expand(array($echo, 'stepped'));
 echo join("\n", $exp->current_words());
