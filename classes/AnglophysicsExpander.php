@@ -49,7 +49,7 @@ class AnglophysicsExpander_WordEliminator{
 			$res[] = $word;
 		}
 		$words = $res;
-		exec("echo '" . join(' ', $words) . "' | aspell list --encoding=utf-8 -H --lang=en", $bad);
+		exec("echo '" . join(' ', $words) . "' | aspell list --encoding=utf-8 --lang=en --dict-dir=" . APP_PATH . "/dict --master=nouns", $bad);
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $bad);
 		return $words;
 	}
