@@ -17,6 +17,7 @@ class ConsoleEcho{
 
 	public function join($words, $prefix, $length){
 		$lines = "";
+		$potential = $prefix;
 		while ($word = array_shift($words)){
 			$potential = $line . $word . ', ';
 			if (strlen($potential) <= $length){
@@ -25,7 +26,7 @@ class ConsoleEcho{
 			else{
 				if ($line)
 					$lines .= $line . "\n";
-				$line = $prefix . $word;
+				$line = $prefix . $word . ', ';
 			}
 		}
 		if ($line)
