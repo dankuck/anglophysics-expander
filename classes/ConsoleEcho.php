@@ -10,8 +10,26 @@ class ConsoleEcho{
 
 	public function stepped($done){
 		$this->i++;
-		echo $this->i . '. ' . round(microtime(true) - $this->start, 2) . ' seconds, ' . count($this->expander->current_words()) . "\n";
+		echo $this->i . '. ' . round(microtime(true) - $this->start, 2) . ' seconds' . "\n" . $this->join($this->expander->current_words(), "\t", 80) . "\n";
 		if ($done)
 			echo "DONE\n";
+	}
+
+	public function join($words, $prefix, $length){
+		$lines = "";
+		while ($word = array_shift($words)){
+			$potential = $line . $word . ', ';
+			if (strlen($potential) <= $length){
+				$line = $potential;
+			}
+			else{
+				if ($line)
+					$lines .= $line . "\n";
+				$line = $prefix . $word;
+			}
+		}
+		if ($line)
+			$lines .= $line . "\n";
+		return $lines;
 	}
 }
