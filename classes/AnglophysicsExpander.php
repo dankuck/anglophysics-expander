@@ -147,7 +147,7 @@ class AnglophysicsExpander_ArrayRemainder{
 	public static function eliminate($array, $eliminations){
 		$res = array();
 		foreach ($array as $item)
-			if (in_array($item, $eliminations))
+			if (! in_array($item, $eliminations))
 				$res[] = $item;
 		return $res;
 	}
