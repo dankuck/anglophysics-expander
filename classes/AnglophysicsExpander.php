@@ -42,13 +42,16 @@ class AnglophysicsExpander_WordEliminator{
 	public static function eliminate_non_words($words){
 		$res = array();
 		foreach ($words as $word){
-			if (strlen($word) < 2)
+			if (strlen($word) < 2) // no one-letter words, because none of them are the kind that this world cares about
 				continue;
-			if (! preg_match('/[aeiou]/', $word))
+			if (! preg_match('/[aeiou]/', $word)) // no vowel-less words.
 				continue;
 			$res[] = $word;
 		}
-		return $res;
+		$words = $res;
+		exec("echo '" . join(' ', $words) . "' | aspell list --encoding=utf-8 -H --lang=en", $bad);
+		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $bad);
+		return $words;
 	}
 }
 
