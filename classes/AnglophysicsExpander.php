@@ -12,6 +12,10 @@ class AnglophysicsExpander{
 		return $this->words;
 	}
 
+	public function last_added_words(){
+		return end($this->words_by_phase);
+	}
+
 	public function step(){
 		$words = AnglophysicsExpander_WordGenerator::generate_potential_words($this->words, $this->max_word_length);
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words);

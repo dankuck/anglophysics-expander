@@ -10,7 +10,7 @@ class ConsoleEcho{
 
 	public function stepped($done){
 		$this->i++;
-		echo $this->i . '. ' . round(microtime(true) - $this->start, 2) . ' seconds' . "\n" . $this->join($this->expander->current_words(), "\t", 80) . "\n";
+		echo $this->i . '. ' . round(microtime(true) - $this->start, 2) . ' seconds' . "\n" . $this->join($this->expander->last_added_words(), "\t", 80) . "\n";
 		if ($done)
 			echo "DONE\n";
 	}
