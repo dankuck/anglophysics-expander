@@ -12,3 +12,4 @@ $exp = new AnglophysicsExpander($base_words, 4);
 $echo = new ConsoleEcho($exp);
 $exp->expand(array($echo, 'stepped'));
 
+echo "Results: " . count($exp->words()) . "\n";
