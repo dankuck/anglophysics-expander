@@ -40,7 +40,13 @@ class AnglophysicsExpander{
 class AnglophysicsExpander_WordEliminator{
 
 	public static function eliminate_non_words($words){
-		return $words;
+		$res = array();
+		foreach ($words as $word){
+			if (strlen($word) < 2)
+				continue;
+			$res[] = $word;
+		}
+		return $res;
 	}
 }
 
