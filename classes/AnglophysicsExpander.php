@@ -44,6 +44,8 @@ class AnglophysicsExpander_WordEliminator{
 		foreach ($words as $word){
 			if (strlen($word) < 2)
 				continue;
+			if (! preg_match('/[aeiou]/', $word))
+				continue;
 			$res[] = $word;
 		}
 		return $res;
