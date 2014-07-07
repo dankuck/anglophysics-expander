@@ -26,8 +26,14 @@ class AnglophysicsExpander{
 		return end($this->words_by_phase);
 	}
 
+	private function generate(){
+		if ($this->generated)
+			return $this->generated;
+		return $this->generated = AnglophysicsExpander_WordGenerator::generate_potential_words($this->words, $this->max_word_length);
+	}
+
 	public function step(){
-		$words = AnglophysicsExpander_WordGenerator::generate_potential_words($this->words, $this->max_word_length);
+		$words = $this->generate();
 		$this->cb('generate', array($words));
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words); // we don't have to do this now, but it could speed up the following steps
 		$this->cb('eliminate', array('known', $words));
