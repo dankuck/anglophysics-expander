@@ -8,6 +8,12 @@ class AnglophysicsExpander{
 		$this->max_word_length = $max_word_length;
 	}
 
+	public function set_callbacks($cb){
+		$this->step_cb = $cbs['step'];
+		$this->generate_cb = $cbs['generate'];
+		$this->eliminate_cb = $cbs['eliminate'];
+	}
+
 	public function current_words(){
 		return $this->words;
 	}
@@ -22,22 +28,32 @@ class AnglophysicsExpander{
 
 	public function step(){
 		$words = AnglophysicsExpander_WordGenerator::generate_potential_words($this->words, $this->max_word_length);
+		$this->cb('generate', array($words));
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words); // we don't have to do this now, but it could speed up the following steps
+		$this->cb('eliminate', array('known', $words));
 		$words = AnglophysicsExpander_WordEliminator::eliminate_non_words($words);
+		$this->cb('eliminate', array('not-nouns', $words));
 		$words = AnglophysicsExpander_CombinationFinder::eliminate_uncombinable_words($this->words, $words);
+		$this->cb('eliminate', array('uncombinable', $words));
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words);
+		$this->cb('eliminate', array('known', $words));
 		$this->words_by_phase[] = $words;
 		$this->words = array_merge($this->words, $words);
 	}
 
-	public function expand($cb = null){
+	public function expand(){
 		do{
 			$prior_count = count($this->words);
-			$this->step();
+			$this->step($cb);
 			$found_more = count($this->words) > $prior_count;
-			if (is_callable($cb))
-				call_user_func_array($cb, array(! $found_more));
+			$this->cb('step', array(! $found_more));
 		} while($found_more);
+	}
+
+	private function cb($type, $params){
+		$field = $type . '_cb';
+		if (is_callable($this->$field))
+			call_user_func_array($this->$field, $params);
 	}
 }
 

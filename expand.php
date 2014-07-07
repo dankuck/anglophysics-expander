@@ -10,7 +10,10 @@ else{
 
 $exp = new AnglophysicsExpander($base_words, 4);
 $echo = new ConsoleEcho($exp);
+$exp->set_callbacks(array(
+	step => array($echo, 'stepped')
+));
 $echo->stepped(); 
-$exp->expand(array($echo, 'stepped'));
+$exp->expand();
 
 echo "Results: " . count($exp->current_words()) . "\n";
