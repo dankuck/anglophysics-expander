@@ -185,10 +185,11 @@ class AnglophysicsExpander_CombinationFinder{
 			while (! $it->done()){
 				$letters = array_unique(preg_split('//', join('', $it->next())));
 				sort($letters);
+				array_splice($letters, 0, 1); // a '' always winds up at the beginning. Remove it.
 				$groups[join('', $letters)] = $letters;
 			}
 		}
-		return $groups;
+		return array_values($groups);
 	}
 }
 
