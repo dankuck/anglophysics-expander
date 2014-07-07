@@ -12,6 +12,10 @@ class AnglophysicsExpander{
 		return $this->words;
 	}
 
+	public function current_words_by_phase(){
+		return $this->words_by_phase;
+	}
+
 	public function last_added_words(){
 		return end($this->words_by_phase);
 	}
