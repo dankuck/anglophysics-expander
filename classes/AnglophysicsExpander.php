@@ -196,7 +196,7 @@ class AnglophysicsExpander_CombinationFinder{
 				if ($match->done())
 					$combinable = array_merge($combinable, $match->words());
 		}
-		return $combinable;
+		return array_unique($combinable);
 	}
 
 	public static function letter_groups($start){
