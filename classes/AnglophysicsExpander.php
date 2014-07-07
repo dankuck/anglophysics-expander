@@ -204,7 +204,7 @@ class AnglophysicsExpander_CombinationFinder{
 		for ($i = 2; $i <= count($start); $i++){
 			$it = new AnglophysicsExpander_CombinationFinder_Permutator($start, $i);
 			while (! $it->done()){
-				$letters = array_unique(preg_split('//', join('', $it->next())));
+				$letters = preg_split('//', join('', $it->next()));
 				sort($letters);
 				$letters = join('', $letters);
 				$groups[$letters] = $letters;
@@ -311,12 +311,18 @@ class AnglophysicsExpander_CombinationFinder_MatchyGrabby{
 	} 
 
 	public function eat($word){
-		if (self::matches($word, $this->remaining)){
-			$this->words[] = $word;
-			$this->remaining = preg_replace('/[' . $word . ']/', '', $this->remaining);
-			return true;
+		if ($this->done())
+			return false;
+		$remaining = $this->remaining;
+		for ($i = 0; $i < strlen($word); $i++){
+			if (! preg_match('/' . $word[$i] . '/', $remaining)){
+				return false;
+			}
+			$remaining = preg_replace('/' . $word[$i] . '/', '', $remaining, 1);
 		}
-		return false;
+		$this->words[] = $word;
+		$this->remaining = $remaining;
+		return true;
 	}
 
 	public function done(){
@@ -325,15 +331,6 @@ class AnglophysicsExpander_CombinationFinder_MatchyGrabby{
 
 	public function words(){
 		return $this->words;
-	}
-
-	public static function matches($word, $match){
-		for ($i = 0; $i < strlen($word); $i++){
-			if (! preg_match('/' . $word[$i] . '/', $match)){
-				return false;
-			}
-		}
-		return true;
 	}
 }
 
