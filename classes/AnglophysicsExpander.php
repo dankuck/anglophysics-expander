@@ -8,7 +8,7 @@ class AnglophysicsExpander{
 		$this->max_word_length = $max_word_length;
 	}
 
-	public function set_callbacks($cb){
+	public function set_callbacks($cbs){
 		$this->step_cb = $cbs['step'];
 		$this->generate_cb = $cbs['generate'];
 		$this->eliminate_cb = $cbs['eliminate'];
