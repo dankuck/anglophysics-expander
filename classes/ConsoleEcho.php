@@ -15,6 +15,14 @@ class ConsoleEcho{
 			echo "DONE\n";
 	}
 
+	public function generate($words){
+		echo "Generated " . count($words) . "\n";
+	}
+
+	public function eliminate($elimination_type, $remaining_words){
+		echo "Eliminated $elimination_type. " . count($remaining_words) . " remain\n";
+	}
+
 	public function join($words, $prefix, $length){
 		$lines = "";
 		$line = $prefix;

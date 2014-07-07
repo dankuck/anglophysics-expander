@@ -11,7 +11,9 @@ else{
 $exp = new AnglophysicsExpander($base_words, 4);
 $echo = new ConsoleEcho($exp);
 $exp->set_callbacks(array(
-	step => array($echo, 'stepped')
+	step => array($echo, 'stepped'),
+	generate => array($echo, 'generate'),
+	eliminate => array($echo, 'eliminate')
 ));
 $echo->stepped(); 
 $exp->expand();
