@@ -179,12 +179,14 @@ class AnglophysicsExpander_CombinationFinder{
 	}
 
 	public static function letter_groups($start){
-		$it = new AnglophysicsExpander_WordGenerator_Permutator($start, count($start));
 		$groups = array();
-		while (! $it->done()){
-			$letters = array_unique(preg_split('//', $it->next()));
-			sort($letters);
-			$groups[join('', $letters)] = $letters;
+		for ($i = 2; $i <= count($start); $i++){
+			$it = new AnglophysicsExpander_CombinationFinder_Permutator($start, $i);
+			while (! $it->done()){
+				$letters = array_unique(preg_split('//', join('', $it->next())));
+				sort($letters);
+				$groups[join('', $letters)] = $letters;
+			}
 		}
 		return $groups;
 	}
