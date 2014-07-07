@@ -173,9 +173,30 @@ class AnglophysicsExpander_ArrayRemainder{
 
 class AnglophysicsExpander_CombinationFinder{
 
-	public static function eliminate_uncombinable_words($start, $words){
+	public static function eliminate_uncombinable_words($start, $new_words){
 		$letter_groups = self::letter_groups($start);
-		return $words;
+		$combinable = array();
+		foreach ($letter_groups as $group){	
+			$matches = array();
+			foreach ($new_words as $new_word){
+				$new_matcher = new AnglophysicsExpander_CombinationFinder_MatchyGrabby($group);
+				if (! $new_matcher->eat($new_word))
+					continue; // not gonna match any of the saved matches, if it doesn't even match the brand-new one.
+				foreach ($matches as $matcher){
+					$matcher->eat($new_word);
+				}
+				$matches[] = $new_matcher;
+			}
+			foreach ($start as $old_word){
+				foreach ($matches as $matcher){
+					$matcher->eat($old_word);
+				}
+			}
+			foreach ($matches as $match)
+				if ($match->done())
+					$combinable = array_merge($combinable, $match->words());
+		}
+		return $combinable;
 	}
 
 	public static function letter_groups($start){
@@ -185,8 +206,8 @@ class AnglophysicsExpander_CombinationFinder{
 			while (! $it->done()){
 				$letters = array_unique(preg_split('//', join('', $it->next())));
 				sort($letters);
-				array_splice($letters, 0, 1); // a '' always winds up at the beginning. Remove it.
-				$groups[join('', $letters)] = $letters;
+				$letters = join('', $letters);
+				$groups[$letters] = $letters;
 			}
 		}
 		return array_values($groups);
@@ -282,4 +303,37 @@ class AnglophysicsExpander_CombinationFinder_Permutator{
 
 }
 
+class AnglophysicsExpander_CombinationFinder_MatchyGrabby{
+
+	public function __construct($group){
+		$this->words = array();
+		$this->remaining = $group;
+	} 
+
+	public function eat($word){
+		if (self::matches($word, $this->remaining)){
+			$this->words[] = $word;
+			$this->remaining = preg_replace('/[' . $word . ']/', '', $this->remaining);
+			return true;
+		}
+		return false;
+	}
+
+	public function done(){
+		return ! $this->remaining;
+	}
+
+	public function words(){
+		return $this->words;
+	}
+
+	public static function matches($word, $match){
+		for ($i = 0; $i < strlen($word); $i++){
+			if (! preg_match('/' . $word[$i] . '/', $match)){
+				return false;
+			}
+		}
+		return true;
+	}
+}
 
