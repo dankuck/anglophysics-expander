@@ -38,7 +38,7 @@ class AnglophysicsExpander{
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words); // we don't have to do this now, but it could speed up the following steps
 		$this->cb('eliminate', array('known', $words));
 		$words = AnglophysicsExpander_WordEliminator::eliminate_non_words($words);
-		$this->cb('eliminate', array('not-nouns', $words));
+		$this->cb('eliminate', array('not-words', $words));
 		$words = AnglophysicsExpander_CombinationFinder::eliminate_uncombinable_words($this->words, $words);
 		$this->cb('eliminate', array('uncombinable', $words));
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words);
@@ -71,6 +71,8 @@ class AnglophysicsExpander_WordEliminator{
 			if (strlen($word) < 2) // no one-letter words, because none of them are the kind that this world cares about
 				continue;
 			if (! preg_match('/[aeiou]/', $word)) // no vowel-less words.
+				continue;
+			if (preg_match('/(.)\1{2,2}/', $word)) // no run-ons of more than two of the same char
 				continue;
 			$res[] = $word;
 		}
