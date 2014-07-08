@@ -366,6 +366,7 @@ implements Iterator{
 		if ($this->max > 5)
 			$this->max = 5;
 		$this->it_size = 1;
+		$this->next();
 	}
 
 	public function current(){
