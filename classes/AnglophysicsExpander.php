@@ -84,7 +84,7 @@ class AnglophysicsExpander_WordEliminator{
 		while ($chunk = array_splice($words, 0, 10000)){
 			$bad = array();
 			exec("echo '" . join(' ', $chunk) . "' | aspell list --encoding=utf-8 --lang=en --dict-dir=" . APP_ROOT . "/dict --master=nouns", $bad);
-			$good = AnglophysicsExpander_ArrayRemainder::eliminate($chunk, $bad);
+			$good = array_merge($good, AnglophysicsExpander_ArrayRemainder::eliminate($chunk, $bad));
 		}
 		$words = $good;
 		return $words;
