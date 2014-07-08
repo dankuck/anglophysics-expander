@@ -20,7 +20,7 @@ class ConsoleEcho{
 	}
 
 	public function eliminate($elimination_type, $remaining_words){
-		echo "Eliminated $elimination_type. " . count($remaining_words) . " remain\n";
+		echo "Eliminated $elimination_type. " . count($remaining_words) . " remain : " . join(', ', array_slice($remaining_words, 0, 6)) . "...\n";
 	}
 
 	public function join($words, $prefix, $length){
