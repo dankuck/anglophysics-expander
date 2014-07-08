@@ -29,16 +29,17 @@ class AnglophysicsExpander{
 	private function generate(){
 		if ($this->generated)
 			return $this->generated;
-		return $this->generated = AnglophysicsExpander_WordGenerator::generate_potential_words($this->words, $this->max_word_length);
+		$this->generated = AnglophysicsExpander_WordGenerator::generate_potential_words($this->words, $this->max_word_length);
+		$this->cb('generate', array($this->generated));
+		$this->generated = AnglophysicsExpander_WordEliminator::eliminate_non_words($this->generated);
+		$this->cb('eliminate', array('not-words', $this->generated));
+		return $this->generated;
 	}
 
 	public function step(){
 		$words = $this->generate();
-		$this->cb('generate', array($words));
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words); // we don't have to do this now, but it could speed up the following steps
 		$this->cb('eliminate', array('known', $words));
-		$words = AnglophysicsExpander_WordEliminator::eliminate_non_words($words);
-		$this->cb('eliminate', array('not-words', $words));
 		$words = AnglophysicsExpander_CombinationFinder::eliminate_uncombinable_words($this->words, $words);
 		$this->cb('eliminate', array('uncombinable', $words));
 		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $this->words);
