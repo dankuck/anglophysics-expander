@@ -227,7 +227,10 @@ class AnglophysicsExpander_CombinationFinder{
 
 	public static function letter_groups($start){
 		$groups = array();
-		for ($i = 2; $i <= count($start); $i++){
+		$max = count($start);
+		if ($max > 5)
+			$max = 5;
+		for ($i = 2; $i <= $max; $i++){
 			$it = new AnglophysicsExpander_CombinationFinder_Permutator($start, $i);
 			while (! $it->done()){
 				$letters = preg_split('//', join('', $it->next()));
