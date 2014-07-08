@@ -200,7 +200,7 @@ class AnglophysicsExpander_ArrayRemainder{
 class AnglophysicsExpander_CombinationFinder{
 
 	public static function eliminate_uncombinable_words($start, $new_words){
-		$letter_groups = self::letter_groups($start);
+		$letter_groups = self::letter_groups($start, true);
 		$combinable = array();
 		foreach ($letter_groups as $group){	
 			$matches = array();
