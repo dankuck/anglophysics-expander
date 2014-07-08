@@ -378,7 +378,7 @@ implements Iterator{
 
 	public function next(){
 		if (! $this->it || ($this->it->done() && $this->it_size < $this->max)){
-			$this->it = new AnglophysicsExpander_CombinationFinder_Permutator($start, ++$this->it_size);
+			$this->it = new AnglophysicsExpander_CombinationFinder_Permutator($this->start, ++$this->it_size);
 		}
 		do{
 			$letters = preg_split('//', join('', $this->it->next()));
