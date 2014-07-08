@@ -377,8 +377,9 @@ implements Iterator{
 	}
 
 	public function next(){
-		if (! $this->it || $this->it->done())
+		if (! $this->it || ($this->it->done() && $this->it_size < $this->max)){
 			$this->it = new AnglophysicsExpander_CombinationFinder_Permutator($start, ++$this->it_size);
+		}
 		do{
 			$letters = preg_split('//', join('', $this->it->next()));
 			sort($letters);
@@ -389,7 +390,15 @@ implements Iterator{
 	}
 
 	public function valid(){
-		return ! $this->it || $this->it->done();
+		return ! $this->done();
+	}
+
+	public function done(){
+		if (! $this->it)
+			return false;
+		if ($this->it->done() && $this->it_size >= $this->max)
+			return true;
+		return false;
 	}
 
 	public static function simplify_start($start){
