@@ -241,7 +241,7 @@ class AnglophysicsExpander_CombinationFinder{
 				}
 			}
 		}
-		return $combinable;
+		return $combinable = AnglophysicsExpander_ArrayRemainder::eliminate(array_unique($combinable), $start);
 	}
 
 	public static function letter_groups($start, $return_array = false){
