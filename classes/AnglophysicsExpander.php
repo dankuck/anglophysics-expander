@@ -203,27 +203,43 @@ class AnglophysicsExpander_CombinationFinder{
 		$letter_groups = self::letter_groups($start, true);
 		$combinable = array();
 		foreach ($letter_groups as $group){	
-			$matches = array();
+			$half_matches = array();
+			$done_matches = array();
+			$base = new AnglophysicsExpander_CombinationFinder_MatchyGrabby($group);
 			foreach ($new_words as $new_word){
-				$new_matcher = new AnglophysicsExpander_CombinationFinder_MatchyGrabby($group);
-				if (! $new_matcher->eat($new_word))
+				if (! $new_match = $base->with($new_word))
 					continue; // not gonna match any of the saved matches, if it doesn't even match the brand-new one.
-				foreach ($matches as $matcher){
-					$matcher->eat($new_word);
+				foreach ($half_matches as $matcher){
+					if ($copy_match = $matcher->with($new_word)){
+						if ($copy_match->done())
+							$done_matches[] = $copy_match;
+						else
+							$half_matches[] = $copy_match;
+					}
 				}
-				$matches[] = $new_matcher;
+				if ($new_match->done())
+					$done_matches[] = $new_match;
+				else
+					$half_matches[] = $new_match;
 			}
 			foreach ($start as $old_word){
-				foreach ($matches as $matcher){
-					$matcher->eat($old_word);
+				foreach ($half_matches as $matcher){
+					if ($copy_match = $matcher->with($old_word)){
+						if ($copy_match->done())
+							$done_matches[] = $copy_match;
+						else
+							$half_matches[] = $copy_match;
+					}
 				}
 			}
-			foreach ($matches as $match)
-				if ($match->done())
-					$combinable = array_merge($combinable, $match->words());
-			$combinable = AnglophysicsExpander_ArrayRemainder::eliminate(array_unique($combinable), $start);
-			if (count($combinable) == count($new_words))
-				break; // Oh, we found them all. Yay!
+			foreach ($done_matches as $match){
+				$combinable = array_merge($combinable, $match->words());
+				if (count($combinable) >= count($new_words)){ // maybe we found them all
+					$combinable = AnglophysicsExpander_ArrayRemainder::eliminate(array_unique($combinable), $start);
+					if (count($combinable) == count($new_words))
+						return $combinable; // Oh, we found them all. Yay!
+				}
+			}
 		}
 		return $combinable;
 	}
@@ -345,19 +361,19 @@ class AnglophysicsExpander_CombinationFinder_MatchyGrabby{
 		$this->remaining = $group;
 	} 
 
-	public function eat($word){
+	public function with($word){
 		if ($this->done())
-			return false;
+			return null;
 		$remaining = $this->remaining;
 		for ($i = 0; $i < strlen($word); $i++){
 			if (! preg_match('/' . $word[$i] . '/', $remaining)){
-				return false;
+				return null;
 			}
 			$remaining = preg_replace('/' . $word[$i] . '/', '', $remaining, 1);
 		}
-		$this->words[] = $word;
-		$this->remaining = $remaining;
-		return true;
+		$copy = new self($remaining);
+		$copy->words = array_merge($this->words, array($word));
+		return $copy;
 	}
 
 	public function done(){
