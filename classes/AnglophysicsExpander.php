@@ -390,7 +390,7 @@ implements Iterator{
 	}
 
 	public function valid(){
-		return ! $this->done();
+		return !! $this->current;
 	}
 
 	public function done(){
