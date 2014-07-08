@@ -222,6 +222,7 @@ class AnglophysicsExpander_CombinationFinder{
 				else
 					$half_matches[] = $new_match;
 			}
+			/*
 			foreach ($start as $old_word){
 				foreach ($half_matches as $matcher){
 					if ($copy_match = $matcher->with($old_word)){
@@ -232,6 +233,7 @@ class AnglophysicsExpander_CombinationFinder{
 					}
 				}
 			}
+			*/
 			foreach ($done_matches as $match){
 				$combinable = array_merge($combinable, $match->words());
 				if (count($combinable) >= count($new_words)){ // maybe we found them all
