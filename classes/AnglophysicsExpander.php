@@ -229,33 +229,9 @@ class AnglophysicsExpander_CombinationFinder{
 	}
 
 	public static function letter_groups($start){
-		$groups = array();
-		$start = self::simplify_start($start);
-		$max = count($start);
-		if ($max > 5)
-			$max = 5;
-		for ($i = 2; $i <= $max; $i++){
-			$it = new AnglophysicsExpander_CombinationFinder_Permutator($start, $i);
-			while (! $it->done()){
-				$letters = preg_split('//', join('', $it->next()));
-				sort($letters);
-				$letters = join('', $letters);
-				$groups[$letters] = $letters;
-			}
-		}
-		return array_values($groups);
+		return AnglophysicsExpander_CombinationFinder_LetterGrouper($start);
 	}
 
-	public static function simplify_start($start){
-		$simple = array();
-		foreach ($start as $word){
-			$letters = preg_split('//', $word);
-			sort($letters);
-			$letters = join('', $letters);
-			$simple[$word] = true;
-		}
-		return array_keys($simple);
-	}
 }
 
 /**
@@ -377,3 +353,53 @@ class AnglophysicsExpander_CombinationFinder_MatchyGrabby{
 	}
 }
 
+class AnglophysicsExpander_CombinationFinder_LetterGrouper
+implements Iterator{
+
+	public function __construct($start){
+		$this->start = self::simplify_start($start);
+	}
+
+	public function rewind(){
+		$this->seen = array();
+		$this->max = count($this->start);
+		if ($this->max > 5)
+			$this->max = 5;
+		$this->it_size = 1;
+	}
+
+	public function current(){
+		return $this->current;
+	}
+
+	public function key(){
+		return $this->current;
+	}
+
+	public function next(){
+		if (! $this->it || $this->it->done())
+			$this->it = new AnglophysicsExpander_CombinationFinder_Permutator($start, ++$this->it_size);
+		do{
+			$letters = preg_split('//', join('', $this->it->next()));
+			sort($letters);
+			$letters = join('', $letters);
+		} while ($this->seen[$letters]); // already seen that one? go around again.
+		$this->seen[$letters] = 1;
+		$this->current = $letters;
+	}
+
+	public function valid(){
+		return ! $this->it || $this->it->done();
+	}
+
+	public static function simplify_start($start){
+		$simple = array();
+		foreach ($start as $word){
+			$letters = preg_split('//', $word);
+			sort($letters);
+			$letters = join('', $letters);
+			$simple[$word] = true;
+		}
+		return array_keys($simple);
+	}
+}
