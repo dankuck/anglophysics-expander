@@ -80,8 +80,13 @@ class AnglophysicsExpander_WordEliminator{
 			$res[] = $word;
 		}
 		$words = $res;
-		exec("echo '" . join(' ', $words) . "' | aspell list --encoding=utf-8 --lang=en --dict-dir=" . APP_ROOT . "/dict --master=nouns", $bad);
-		$words = AnglophysicsExpander_ArrayRemainder::eliminate($words, $bad);
+		$good = array();
+		while ($chunk = array_splice($words, 0, 20000)){
+			$bad = array();
+			exec("echo '" . join(' ', $chunk) . "' | aspell list --encoding=utf-8 --lang=en --dict-dir=" . APP_ROOT . "/dict --master=nouns", $bad);
+			$good = AnglophysicsExpander_ArrayRemainder::eliminate($chunk, $bad);
+		}
+		$words = $good;
 		return $words;
 	}
 }
