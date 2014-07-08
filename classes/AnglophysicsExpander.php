@@ -228,8 +228,24 @@ class AnglophysicsExpander_CombinationFinder{
 		return $combinable;
 	}
 
-	public static function letter_groups($start){
-		return new AnglophysicsExpander_CombinationFinder_LetterGrouper($start);
+	public static function letter_groups($start, $return_array = false){
+		if (! $return_array)
+			return new AnglophysicsExpander_CombinationFinder_LetterGrouper($start);
+		$groups = array();
+		$start = AnglophysicsExpander_CombinationFinder_LetterGrouper::simplify_start($start);
+		$max = count($start);
+		if ($max > 5)
+			$max = 5;
+		for ($i = 2; $i <= $max; $i++){
+			$it = new AnglophysicsExpander_CombinationFinder_Permutator($start, $i);
+			while (! $it->done()){
+				$letters = preg_split('//', join('', $it->next()));
+				sort($letters);
+				$letters = join('', $letters);
+				$groups[$letters] = $letters;
+			}
+		}
+		return array_values($groups);
 	}
 
 }
@@ -378,10 +394,10 @@ implements Iterator{
 	}
 
 	public function next(){
-		if (! $this->it || ($this->it->done() && $this->it_size < $this->max)){
-			$this->it = new AnglophysicsExpander_CombinationFinder_Permutator($this->start, ++$this->it_size);
-		}
 		do{
+			if (! $this->it || ($this->it->done() && $this->it_size < $this->max)){
+				$this->it = new AnglophysicsExpander_CombinationFinder_Permutator($this->start, ++$this->it_size);
+			}
 			$letters = preg_split('//', join('', $this->it->next()));
 			sort($letters);
 			$letters = join('', $letters);
