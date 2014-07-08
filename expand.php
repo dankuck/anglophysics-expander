@@ -8,7 +8,7 @@ else{
 	// figure out php://input
 }
 
-$exp = new AnglophysicsExpander($base_words, 5);
+$exp = new AnglophysicsExpander($base_words, 6);
 $echo = new ConsoleEcho($exp);
 $exp->set_callbacks(array(
 	step => array($echo, 'stepped'),
