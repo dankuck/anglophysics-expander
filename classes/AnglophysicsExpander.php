@@ -227,6 +227,7 @@ class AnglophysicsExpander_CombinationFinder{
 
 	public static function letter_groups($start){
 		$groups = array();
+		$start = self::simplify_start($start);
 		$max = count($start);
 		if ($max > 5)
 			$max = 5;
@@ -240,6 +241,17 @@ class AnglophysicsExpander_CombinationFinder{
 			}
 		}
 		return array_values($groups);
+	}
+
+	public static function simplify_start($start){
+		$simple = array();
+		foreach ($start as $word){
+			$letters = preg_split('//', $word);
+			sort($letters);
+			$letters = join('', $letters);
+			$simple[$word] = true;
+		}
+		return array_keys($simple);
 	}
 }
 
@@ -318,8 +330,7 @@ class AnglophysicsExpander_CombinationFinder_Permutator{
 			if (count($this->current[$i]) < count($this->current) - $i)
 				continue; // go on to increment the next highest one.
 			for ($i++; $i < count($this->current); $i++){
-				$this->current[$i] = $this->current[$i - 1];
-				array_shift($this->current[$i]);
+				$this->current[$i] = array_slice($this->current[$i - 1], 1);
 				if (! $this->current[$i]){
 					$this->done = true;
 					return;
