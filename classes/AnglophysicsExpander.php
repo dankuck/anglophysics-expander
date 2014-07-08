@@ -222,7 +222,11 @@ class AnglophysicsExpander_CombinationFinder{
 				else
 					$half_matches[] = $new_match;
 			}
-			/*
+			// Note: This could violate the rule that you can't get out the same thing you put in.
+			// But it's hard to rule out this:
+			// rock+art == rat+cork
+			// We don't know which one made the group and we don't want to increase our work by separating those out.
+			// So just ignore this possibility.
 			foreach ($start as $old_word){
 				foreach ($half_matches as $matcher){
 					if ($copy_match = $matcher->with($old_word)){
@@ -233,7 +237,6 @@ class AnglophysicsExpander_CombinationFinder{
 					}
 				}
 			}
-			*/
 			foreach ($done_matches as $match){
 				$combinable = array_merge($combinable, $match->words());
 				if (count($combinable) >= count($new_words)){ // maybe we found them all
