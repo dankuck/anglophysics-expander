@@ -221,7 +221,7 @@ class AnglophysicsExpander_CombinationFinder{
 			foreach ($matches as $match)
 				if ($match->done())
 					$combinable = array_merge($combinable, $match->words());
-			$combinable = array_unique($combinable);
+			$combinable = AnglophysicsExpander_ArrayRemainder::eliminate(array_unique($combinable), $start);
 			if (count($combinable) == count($new_words))
 				break; // Oh, we found them all. Yay!
 		}
