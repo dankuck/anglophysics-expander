@@ -229,7 +229,7 @@ class AnglophysicsExpander_CombinationFinder{
 	}
 
 	public static function letter_groups($start){
-		return AnglophysicsExpander_CombinationFinder_LetterGrouper($start);
+		return new AnglophysicsExpander_CombinationFinder_LetterGrouper($start);
 	}
 
 }
