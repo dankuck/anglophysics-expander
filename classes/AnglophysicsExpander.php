@@ -221,8 +221,11 @@ class AnglophysicsExpander_CombinationFinder{
 			foreach ($matches as $match)
 				if ($match->done())
 					$combinable = array_merge($combinable, $match->words());
+			$combinable = array_unique($combinable);
+			if (count($combinable) == count($new_words))
+				break; // Oh, we found them all. Yay!
 		}
-		return array_unique($combinable);
+		return $combinable;
 	}
 
 	public static function letter_groups($start){
