@@ -257,7 +257,7 @@ class AnglophysicsExpander_CombinationFinder{
 		$max = count($start);
 		if ($max > 5)
 			$max = 5;
-		for ($i = 2; $i <= $max; $i++){
+		for ($i = 1; $i <= $max; $i++){
 			$it = new AnglophysicsExpander_CombinationFinder_Permutator($start, $i);
 			while (! $it->done()){
 				$letters = preg_split('//', join('', $it->next()));
@@ -402,7 +402,7 @@ implements Iterator{
 		$this->max = count($this->start);
 		if ($this->max > 5)
 			$this->max = 5;
-		$this->it_size = 1;
+		$this->it_size = 0;
 		$this->next();
 	}
 
