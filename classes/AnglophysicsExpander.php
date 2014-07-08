@@ -74,6 +74,8 @@ class AnglophysicsExpander_WordEliminator{
 				continue;
 			if (preg_match('/(.)\1{2,2}/', $word)) // no run-ons of more than two of the same char
 				continue;
+			if (preg_match('/^(b-df-hj-np-tv-z)\1/', $word)) // no double-consonants at the beginning
+				continue;
 			$res[] = $word;
 		}
 		$words = $res;
