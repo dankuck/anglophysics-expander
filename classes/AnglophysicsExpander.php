@@ -274,10 +274,13 @@ class AnglophysicsExpander_CombinationFinder{
 		$potential_targets = array();
 		foreach ($loosies as $loose){
 			if ($loose->done()){
-				$potential_targets[] = $loose->words();
+				$letters = preg_split('//', join('', $loose->words()));
+				sort($letters);
+				$letters = join('', $letters);
+				$potential_targets[$letters] = $loose->words();
 			}
 		}
-		return $potential_targets;
+		return array_values($potential_targets);
 	}
 
 	public static function letter_groups($start, $return_array = false){
