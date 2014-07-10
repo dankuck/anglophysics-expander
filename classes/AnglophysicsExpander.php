@@ -109,6 +109,7 @@ class AnglophysicsExpander_WordGenerator{
 	}
 
 	public static function letters_from($words){
+		// TODO: I think array_merge isn't needed here:
 		$letters = array_unique(array_merge(preg_split('//', preg_replace('/[^a-z]/', '', strtolower(join('', $words))))));
 		foreach ($letters as $i => $letter)
 			if (! $letter){ // found the ''
@@ -209,10 +210,20 @@ class AnglophysicsExpander_ArrayRemainder{
 
 class AnglophysicsExpander_CombinationFinder{
 
+	public function __construct($maps, $combinable){
+		$this->maps = $maps;
+		$this->combinable = $combinable;
+	}
+
 	public static function eliminate_uncombinable_words($start, $new_words){
+		return self::make($start, $new_words)->combinable;
+	}
+
+	public static function make($start, $new_words){
 		//$letter_groups = self::letter_groups($start, true);
 		$letter_groups = self::potential_targets($start, $new_words);
 		$combinable = array();
+		$maps = array();
 		foreach ($letter_groups as $group){	
 			$half_matches = array();
 			$done_matches = array();
@@ -249,15 +260,16 @@ class AnglophysicsExpander_CombinationFinder{
 				}
 			}
 			foreach ($done_matches as $match){
+				$maps[AnglophysicsExpander_CombinationFinder::unique_phrase($match->targets())] = $match;
 				$combinable = array_merge($combinable, $match->words());
 				if (count($combinable) >= count($new_words)){ // maybe we found them all
 					$combinable = AnglophysicsExpander_ArrayRemainder::eliminate(array_unique($combinable), $start);
 					if (count($combinable) == count($new_words))
-						return $combinable; // Oh, we found them all. Yay!
+						return new self($maps, $combinable); // Oh, we found them all. Yay!
 				}
 			}
 		}
-		return $combinable = AnglophysicsExpander_ArrayRemainder::eliminate(array_unique($combinable), $start);
+		return new self($maps, AnglophysicsExpander_ArrayRemainder::eliminate(array_unique($combinable), $start));
 	}
 
 	public static function potential_targets($start, $new_words){
@@ -274,9 +286,7 @@ class AnglophysicsExpander_CombinationFinder{
 		$potential_targets = array();
 		foreach ($loosies as $loose){
 			if ($loose->done()){
-				$letters = preg_split('//', join('', $loose->words()));
-				sort($letters);
-				$letters = join('', $letters);
+				$letters = AnglophysicsExpander_CombinationFinder::unique_phrase($loose->words());
 				$potential_targets[$letters] = $loose->words();
 			}
 		}
@@ -294,13 +304,18 @@ class AnglophysicsExpander_CombinationFinder{
 		for ($i = 1; $i <= $max; $i++){
 			$it = new AnglophysicsExpander_CombinationFinder_Permutator($start, $i);
 			while (! $it->done()){
-				$letters = preg_split('//', join('', $it->next()));
-				sort($letters);
-				$letters = join('', $letters);
-				$groups[$letters] = $letters;
+				$words = $it->next();
+				$letters = self::unique_phrase($words);
+				$groups[$letters] = $words;
 			}
 		}
 		return array_values($groups);
+	}
+
+	public static function unique_phrase($words){
+		$letters = preg_split('//', join('', $words));
+		sort($letters);
+		return join('', $letters);
 	}
 
 }
@@ -481,12 +496,11 @@ implements Iterator{
 			if (! $this->it || ($this->it->done() && $this->it_size < $this->max)){
 				$this->it = new AnglophysicsExpander_CombinationFinder_Permutator($this->start, ++$this->it_size);
 			}
-			$letters = preg_split('//', join('', $this->it->next()));
-			sort($letters);
-			$letters = join('', $letters);
+			$words = $this->it->next();
+			$letters = AnglophysicsExpander_CombinationFinder::unique_phrase($words);
 		} while ($this->seen[$letters]); // already seen that one? go around again.
 		$this->seen[$letters] = 1;
-		$this->current = $letters;
+		$this->current = $words;
 	}
 
 	public function valid(){
@@ -504,11 +518,9 @@ implements Iterator{
 	public static function simplify_start($start){
 		$simple = array();
 		foreach ($start as $word){
-			$letters = preg_split('//', $word);
-			sort($letters);
-			$letters = join('', $letters);
-			$simple[$word] = true;
+			$letters = AnglophysicsExpander_CombinationFinder::unique_phrase(array($word));
+			$simple[$letters] = $word;
 		}
-		return array_keys($simple);
+		return array_values($simple);
 	}
 }
