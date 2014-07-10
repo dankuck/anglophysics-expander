@@ -210,7 +210,8 @@ class AnglophysicsExpander_ArrayRemainder{
 class AnglophysicsExpander_CombinationFinder{
 
 	public static function eliminate_uncombinable_words($start, $new_words){
-		$letter_groups = self::letter_groups($start, true);
+		//$letter_groups = self::letter_groups($start, true);
+		$letter_groups = self::potential_targets($start, $new_words);
 		$combinable = array();
 		foreach ($letter_groups as $group){	
 			$half_matches = array();
@@ -257,6 +258,26 @@ class AnglophysicsExpander_CombinationFinder{
 			}
 		}
 		return $combinable = AnglophysicsExpander_ArrayRemainder::eliminate(array_unique($combinable), $start);
+	}
+
+	public static function potential_targets($start, $new_words){
+		$loosies = array();
+		foreach ($new_words as $word){
+			$loosies[] = new AnglophysicsExpander_CombinationFinder_MatchyGrabby_Loose($word);
+		}
+		foreach ($start as $word){
+			foreach ($loosies as $loose){
+				if ($new = $loose->with($word))
+					$loosies[] = $new;
+			}
+		}
+		$potential_targets = array();
+		foreach ($loosies as $loose){
+			if ($loose->done()){
+				$potential_targets[] = $loose->words();
+			}
+		}
+		return $potential_targets;
 	}
 
 	public static function letter_groups($start, $return_array = false){
@@ -371,24 +392,34 @@ class AnglophysicsExpander_CombinationFinder_Permutator{
 
 class AnglophysicsExpander_CombinationFinder_MatchyGrabby{
 
-	public function __construct($group){
+	public function __construct($targets){
 		$this->words = array();
-		$this->remaining = $group;
+		$this->targets = is_array($targets) ? $targets : array($targets);
+		$this->remaining = join('', $this->targets);
 	} 
 
 	public function with($word){
 		if ($this->done())
 			return null;
+		$remaining = $this->match($word);
+		if ($remaining === false)
+			return null;
+		$c = get_class($this);
+		$copy = new $c($remaining);
+		$copy->words = array_merge($this->words, array($word));
+		$copy->targets = $this->targets;
+		return $copy;
+	}
+
+	protected function match($word){
 		$remaining = $this->remaining;
 		for ($i = 0; $i < strlen($word); $i++){
 			if (! preg_match('/' . $word[$i] . '/', $remaining)){
-				return null;
+				return false;
 			}
 			$remaining = preg_replace('/' . $word[$i] . '/', '', $remaining, 1);
 		}
-		$copy = new self($remaining);
-		$copy->words = array_merge($this->words, array($word));
-		return $copy;
+		return $remaining;
 	}
 
 	public function done(){
@@ -397,6 +428,24 @@ class AnglophysicsExpander_CombinationFinder_MatchyGrabby{
 
 	public function words(){
 		return $this->words;
+	}
+
+	public function targets(){
+		return $this->targets;
+	}
+}
+
+class AnglophysicsExpander_CombinationFinder_MatchyGrabby_Loose
+extends AnglophysicsExpander_CombinationFinder_MatchyGrabby{
+
+	protected function match($word){
+		$remaining = $this->remaining;
+		for ($i = 0; $i < strlen($word); $i++){
+			$remaining = preg_replace('/' . $word[$i] . '/', '', $remaining, 1);
+		}
+		return $remaining == $this->remaining 
+				? false 
+				: $remaining;
 	}
 }
 
